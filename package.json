@@ -33,9 +33,9 @@
   "scripts": {
     "compile-sass": "node-sass styles/main.scss css/style.comp.css",
     "prefix-css": "postcss --use autoprefixer -b 'last 5 versions' css/style.comp.css -o css/style.prefix.css",
-    "compress-css": "node-sass css/style.prefix.css app/index.css --output-style compressed",
+    "compress-css": "node-sass css/style.prefix.css index.css --output-style compressed",
     "build-styles": "yarn run compile-sass && yarn run prefix-css && yarn run compress-css",
-    "watch-sass": "node-sass styles/main.scss app/index.css --watch",
+    "watch-sass": "node-sass styles/main.scss index.css --watch",
     "build": "yarn run build-styles && yarn run webpack",
     "start": "yarn run watch-sass & yarn run webpack-dev-server --open"
   }
