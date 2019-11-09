@@ -1,0 +1,42 @@
+{
+  "name": "crowdstreet",
+  "version": "0.0.1",
+  "description": "Test Questionnaire - Software Engineer",
+  "main": "index.js",
+  "author": "Tarren Engberg",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/preset-react": "^7.7.0",
+    "autoprefixer": "^9.7.1",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "node-sass": "^4.13.0",
+    "postcss-cli": "^6.1.3",
+    "style-loader": "^1.0.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ]
+  },
+  "scripts": {
+    "compile-sass": "node-sass styles/main.scss css/style.comp.css",
+    "prefix-css": "postcss --use autoprefixer -b 'last 5 versions' css/style.comp.css -o css/style.prefix.css",
+    "compress-css": "node-sass css/style.prefix.css app/index.css --output-style compressed",
+    "build-styles": "yarn run compile-sass && yarn run prefix-css && yarn run compress-css",
+    "watch-sass": "node-sass styles/main.scss app/index.css --watch",
+    "build": "yarn run build-styles && yarn run webpack",
+    "start": "yarn run watch-sass & yarn run webpack-dev-server --open"
+  }
+}
