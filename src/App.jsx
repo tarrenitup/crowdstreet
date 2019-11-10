@@ -1,4 +1,5 @@
 import React, { useReducer } from 'react';
+import { selector } from 'postcss-selector-parser';
 
 const updateObjectInArray = (array, action) => array.map(
     (item, idx) => idx !== action.index 
@@ -60,13 +61,13 @@ const Row = ({ rowCells }) => (
 
 const Table = ({ table }) => {
     const colCount = 5;
-    const cells = getCells(table.N, table.X, table.M);
-    const rows = getRows(cells, colCount, table.D.ltr);
-    const rowsInline = table.D.up ? rows.reverse() : rows;
+    const cells = getCells(table.data.N, table.data.X, table.data.M);
+    const rows = getRows(cells, colCount, table.direction.ltr);
+    const rowsInline = table.direction.up ? rows.reverse() : rows;
 
     return (
         <div className={`table-outer ${table.name}`}>
-            <table style={{width: `${table.W}%`}}>
+            <table style={{width: `${table.data.W}%`}}>
                 <tbody>
                     {rowsInline.map((rowCells, idx) => (
                         <Row rowCells={rowCells} key={idx} />
@@ -75,7 +76,7 @@ const Table = ({ table }) => {
             </table>
             <div className='controls'>
                 <button onClick={() => console.log('clicked!')} />
-                <p className='label'>{table.W}%</p>
+                <p className='label'>{table.data.W}%</p>
             </div>
         </div>
     );
@@ -87,16 +88,20 @@ const Tables = ({ tables }) => (
     </div>
 )
 
-const Panel = ({ table }) => {
+const Panel = ({ table, directions }) => {
     return (
-        <section className='tables'>
+        <section className={`panel ${table.name}`}>
             <main className="parameters">
-                {Object.keys(table).map((key, idx) => (
+                <h1>table {table.name}</h1>
+                {Object.keys(table.data).map((key, idx) => (
                     <>
-                        <label key={key+'label'}>{key}</label>
-                        <input key={key+'input'} defaultValue={table[key]} />
+                        <label key={key+'l'}>{key}</label>
+                        <input key={key+'i'} defaultValue={table.data[key]} />
                     </>
                 ))}
+                <select>
+                    <option>a</option>
+                </select>
             </main>
             <footer>
                 <button className="ok" value='ok' />
@@ -115,9 +120,21 @@ const directions = {
 
 const initialState = {
     tables: [
-        {name: 'red', N: 8, X: 1, M: 29, W: 20, D: directions.LTR_UP},
-        {name: 'green', N: 231, X: 1, M: 247, W: 30, D: directions.LTR_UP},
-        {name: 'blue', N: 47, X: 2, M: 81, W: 40, D: directions.RTL_UP},
+        {
+            name: 'red', 
+            data: {N: 8, X: 1, M: 29, W: 20}, 
+            direction: directions.LTR_UP,
+        },
+        {
+            name: 'green', 
+            data: {N: 231, X: 1, M: 247, W: 30}, 
+            direction: directions.LTR_UP,
+        },
+        {
+            name: 'blue', 
+            data: {N: 47, X: 2, M: 81, W: 40}, 
+            direction: directions.RTL_UP,
+        },
     ]
 };
 
@@ -141,7 +158,7 @@ const App = () => {
     return (
         <div className='App'>
             <Tables tables={state.tables} />
-            <Panel table={state.tables[0]} />
+            <Panel table={state.tables[0]} directions={directions} />
         </div>
     );
 }
