@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { useReducer } from 'react';
 
 const updateObjectInArray = (array, action) => array.map(
     (item, idx) => idx !== action.index 
@@ -61,9 +61,8 @@ const Row = ({ rowCells }) => (
 const Table = ({ table }) => {
     const colCount = 5;
     const cells = getCells(table.N, table.X, table.M);
-    const rows = getRows(cells, colCount, table.D_ltr);
-    console.log(rows);
-    const rowsInline = table.D_up ? rows.reverse() : rows;
+    const rows = getRows(cells, colCount, table.D.ltr);
+    const rowsInline = table.D.up ? rows.reverse() : rows;
 
     return (
         <div className={`table-outer ${table.name}`}>
@@ -88,38 +87,39 @@ const Tables = ({ tables }) => (
     </div>
 )
 
-const Panel = () => (
-    <section className='tables'>
-        <main className="parameters">
-            <input type="text" />
-            <input type="text" />
-            <input type="text" />
-            <input type="text" />
-            <input type="text" />
-        </main>
-        <footer>
-            <button className="ok" value='ok' />
-            <button className="cancel" value='cancel' />
-        </footer>
-    </section>
-)
+const Panel = ({ table }) => {
+    return (
+        <section className='tables'>
+            <main className="parameters">
+                {Object.keys(table).map((key, idx) => (
+                    <>
+                        <label key={key+'label'}>{key}</label>
+                        <input key={key+'input'} defaultValue={table[key]} />
+                    </>
+                ))}
+            </main>
+            <footer>
+                <button className="ok" value='ok' />
+                <button className="cancel" value='cancel' />
+            </footer>
+        </section>
+    )
+}
 
-const directionsKey = [
-    {label: 'LTR-UP', ltr: true, up: true},
-    {label: 'RTL-UP', ltr: false, up: true},
-    {label: 'LTR-DOWN', ltr: true, up: false},
-    {label: 'RTL-DOWN', ltr: false, up: false},
-]
+const directions = {
+    LTR_UP: {label: 'Left to right & up', ltr: true, up: true},
+    RTL_UP: {label: 'Right to left & up', ltr: false, up: true},
+    LTR_DOWN: {label: 'Left to right & down', ltr: true, up: false},
+    RTL_DOWN: {label: 'Right to left & down', ltr: false, up: false},
+}
 
 const initialState = {
     tables: [
-        {name: 'red', N: 8, X: 1, M: 29, W: 20, D_label: 'LTR-UP', D_ltr: true, D_up: true,},
-        {name: 'green', N: 231, X: 1, M: 247, W: 30, D_label: 'LTR-UP', D_ltr: true, D_up: true,},
-        {name: 'blue', N: 47, X: 2, M: 81, W: 40, D_label: 'RTL-UP', D_ltr: false, D_up: true,},
+        {name: 'red', N: 8, X: 1, M: 29, W: 20, D: directions.LTR_UP},
+        {name: 'green', N: 231, X: 1, M: 247, W: 30, D: directions.LTR_UP},
+        {name: 'blue', N: 47, X: 2, M: 81, W: 40, D: directions.RTL_UP},
     ]
 };
-
-// const initialState = { test: 0 };
 
 const reducer = (state, action) => {
     switch (action.type) {
@@ -141,6 +141,7 @@ const App = () => {
     return (
         <div className='App'>
             <Tables tables={state.tables} />
+            <Panel table={state.tables[0]} />
         </div>
     );
 }
