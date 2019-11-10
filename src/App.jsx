@@ -1,5 +1,4 @@
-import React from 'react';
-import { StateProvider, useStateValue } from './state.js';
+import React, { createContext, useContext, useReducer } from 'react';
 
 const updateObjectInArray = (array, action) => array.map(
     (item, idx) => idx !== action.index 
@@ -9,7 +8,7 @@ const updateObjectInArray = (array, action) => array.map(
 
 const isEven = n => (n % 2) === 0;
 
-// factor out
+// // factor out
 const getCells = (start, increment, end) => {
     if (!start || !increment || !end) return;
     const cellCount = (end - start) / increment + 1;
@@ -29,8 +28,8 @@ const getRows = (cells, colCount, ltr) => {
 
 const Row = ({ rowCells }) => (
     <tr>
-        {rowCells.map(cell => (
-            <td>{cell}</td>
+        {rowCells.map((cell, idx) => (
+            <td key={idx}>{cell}</td>
         ))}
     </tr>
 )
@@ -39,16 +38,19 @@ const Table = ({ table }) => {
     const colCount = 5;
     const cells = getCells(table.N, table.X, table.M);
     const rows = getRows(cells, colCount, table.D_ltr);
+    const rowsInline = table.D_up ? rows.reverse() : rows;
 
     return (
         <div className={`table-outer ${table.name}`}>
             <table style={{width: `${table.W}%`}}>
-                {rows.map(rowCells => {
-                    <Row rowCells={rowCells} />
-                })}
+                <tbody>
+                    {rowsInline.map((rowCells, idx) => (
+                        <Row rowCells={rowCells} key={idx} />
+                    ))}
+                </tbody>
             </table>
             <div className='controls'>
-                <button onClick={console.log('clicked!')} />
+                <button onClick={() => console.log('clicked!')} />
                 <p className='label'>{table.W}%</p>
             </div>
         </div>
@@ -57,7 +59,7 @@ const Table = ({ table }) => {
 
 const Tables = ({ tables }) => (
     <div className='tables'>
-        {tables.map( table => <Table table={table} /> )}
+        {tables.map((table, idx) => <Table table={table} key={idx} /> )}
     </div>
 )
 
@@ -75,14 +77,14 @@ const Panel = () => (
             <button className="cancel" value='cancel' />
         </footer>
     </section>
-) 
+)
 
-// const directions = [
-//     {label: 'LTR-UP', ltr: true, up: true},
-//     {label: 'RTL-UP', ltr: false, up: true},
-//     {label: 'LTR-DOWN', ltr: true, up: false},
-//     {label: 'RTL-DOWN', ltr: false, up: false},
-// ]
+const directionsKey = [
+    {label: 'LTR-UP', ltr: true, up: true},
+    {label: 'RTL-UP', ltr: false, up: true},
+    {label: 'LTR-DOWN', ltr: true, up: false},
+    {label: 'RTL-DOWN', ltr: false, up: false},
+]
 
 const initialState = {
     tables: [
@@ -92,26 +94,30 @@ const initialState = {
     ]
 };
 
+// const initialState = { test: 0 };
+
 const reducer = (state, action) => {
     switch (action.type) {
         case 'changeTableParameters':
-        return {
-            ...state,
-            tables: updateObjectInArray(state.tables, action),
-        };
+            return {
+                ...state,
+                tables: updateObjectInArray(state.tables, action),
+            };
         
         default:
-        return state;
+            return state;
     }
 };
 
-const [{ tables }, dispatch] = useStateValue();
+const App = () => {
 
-const App = () => (
-    <StateProvider initialState={initialState} reducer={reducer}>
-        <Tables tables={tables} />
-        <Panel />
-    </StateProvider>
-)
+    const [ state, dispatch ] = useReducer(reducer, initialState);
+
+    return (
+        <div className='App'>
+            <Tables tables={state.tables} />
+        </div>
+    );
+}
 
 export default App;
