@@ -3,6 +3,12 @@ import { StateProvider, useStateValue } from './state.js';
 
 const updateObjectInArray = (array, action) => array.map((item, index) => index !== action.index ? item : { ...item, ...action.item });
 
+const getCells = (start, increment, end) => {
+    if (!start || !increment || !end) return;
+    const length = (end - start) / increment + 1;
+    return new Array(length).fill(0).map((c, i) => start + i * increment);
+}
+
 const Row = ({  }) => (
     <tr>
 
@@ -12,7 +18,8 @@ const Row = ({  }) => (
 const Table = ({ table }) => {
     const rows = 5;
     // N: start number, X: increment by, M: max/stop number, W: width of table, D: start direction.
-    
+    const cells = getCells(table.N, table.X, table.M,);
+
     return (
         <div className={`table-outer ${table.name}`}>
             <table style={{width: table.W+'%'}}>
