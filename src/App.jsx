@@ -1,18 +1,12 @@
 import React, { useReducer, useState, useEffect } from 'react';
-import { selector } from 'postcss-selector-parser';
-
-const updateObjectInArray = (array, action) => array.map(
-    (item, idx) => idx !== action.index 
-    ? item 
-    : { ...item, ...action.item }
-);
 
 const isEven = n => (n % 2) === 0;
 
 // factor out
 const getCells = (start, increment, end) => {
     if (!start || !increment || !end) return;
-    const cellCount = (end - start) / increment + 1;
+    console.log("increment", increment);
+    const cellCount = Math.floor((end - start) / increment) + 1;
     return new Array(cellCount).fill(null).map((c, i) => start + i * increment);
 }
 
@@ -21,16 +15,6 @@ const padShortRow = (row, colCount, ltr) => {
     return extras 
         ? row.concat(new Array(extras).fill(null))
         : row;
-        
-    // if(ltr) {
-    //     return extras 
-    //     ? row.concat(new Array(extras).fill(null))
-    //     : row;
-    // } else {
-    //     return extras 
-    //     ? new Array(extras).fill(null).concat(row)
-    //     : row;
-    // }
 }
 
 const getRow = (cells, rowIdx, colCount, ltr) => {
@@ -96,39 +80,30 @@ const Tables = ({ tables, configClick, directions }) => (
     </div>
 )
 
-const Inputs = ({ data, reset }) => {
-
-    const [ state, setState ] = useState(data);
-    
-    useEffect(() => {
-        setState(data);
-    }, [data]);
-
-
+const Inputs = ({ state, setState }) => { // make parameters data subset of state only.
     return (
         <div className="inputs">
             <div>
-                <label>Quantity</label>
-                <input value={state.N} onChange={e => setState({...state, N: e.target.value})} />
+                <label>Start</label>
+                <input value={state.data.N} onChange={e => setState({...state, data: {...state.data, N: parseInt(e.target.value) } }) } />
             </div>
             <div>
-                <label>Interval</label>
-                <input value={state.X} onChange={e => setState({...state, X: e.target.value})} />
+                <label>Increment</label>
+                <input value={state.data.X} onChange={e => setState({...state, data: {...state.data, X: parseInt(e.target.value) } }) } />
             </div>
             <div>
-                <label>Max</label>
-                <input value={state.M} onChange={e => setState({...state, M: e.target.value})} />
+                <label>End</label>
+                <input value={state.data.M} onChange={e => setState({...state, data: {...state.data, M: parseInt(e.target.value) } }) } />
             </div>
             <div>
                 <label>Width</label>
-                <input value={state.W} onChange={e => setState({...state, W: e.target.value})} />
+                <input value={state.data.W} onChange={e => setState({...state, data: {...state.data, W: parseInt(e.target.value) } }) } />
             </div>
         </div>
     );
 }
 
 const Selector = ({currentDirection, directions, handleChange}) => {
-    console.log(currentDirection);
     return (
         <select onChange={handleChange} value={currentDirection}>
             {Object.keys(directions).map((direction, idx) => {
@@ -138,28 +113,33 @@ const Selector = ({currentDirection, directions, handleChange}) => {
     )
 }
 
-const Panel = ({ table, directions }) => {
+const Panel = ({ table, directions, okClick }) => {
 
-    const [ state, setState ] = useState({name: table.name, direction: table.direction});
+    const initialState = table;
+    const [ state, setState ] = useState(initialState);
 
     useEffect(() => {
-        setState({name: table.name, direction: table.direction});
-    },[table.name, table.direction]);
+        setState(initialState);
+    },[table]);
 
     const handleSelectChange = (e) => {
-        setState({...state, direction: e.target.value})
+        setState({...state, direction: e.target.value});
+    }
+
+    const handleCancel = () => {
+        setState(initialState);
     }
 
     return (
         <section className={`panel ${state.name}`}>
             <main className="parameters">
                 <h1>table {state.name}</h1>
-                <Inputs data={table.data} />
+                <Inputs state={state} setState={setState} />
                 <Selector currentDirection={state.direction} directions={directions} handleChange={handleSelectChange} />
             </main>
             <footer>
-                <button className="ok">ok</button>
-                <button className="cancel" onClick={() => console.log('click!')}>cancel</button>
+                <button className="ok" onClick={() => okClick(state)}>ok</button>
+                <button className="cancel" onClick={handleCancel}>cancel</button>
             </footer>
         </section>
     )
@@ -196,9 +176,15 @@ const initialState = {
     ]
 };
 
+const updateObjectInArray = (array, action) => array.map(
+    (item, idx) => idx !== action.index 
+    ? item 
+    : { ...action.item }
+);
+
 const reducer = (state, action) => {
     switch (action.type) {
-        case 'changeTableParameters':
+        case 'updateTable':
             return {
                 ...state,
                 tables: updateObjectInArray(state.tables, action),
@@ -220,6 +206,10 @@ const App = () => {
     const configClick = (tableId) => {
         dispatch({type:'changePanelTable', payload: tableId})
     }
+
+    const panelOkClick = (newTable) => {
+        dispatch({type:'updateTable', item: newTable, index: panelTableIdx})
+    }
     
     const panelTableIdx = state.panel.tableIdx;
     const panelTable = state.tables[panelTableIdx];
@@ -227,7 +217,7 @@ const App = () => {
     return (
         <div className='App'>
             <Tables tables={state.tables} configClick={configClick} directions={directions} />
-            <Panel table={panelTable} directions={directions} />
+            <Panel table={panelTable} directions={directions} okClick={panelOkClick} />
         </div>
     );
 }
