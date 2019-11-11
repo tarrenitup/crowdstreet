@@ -4,7 +4,9 @@ h1, h2, h3, p, a, ul, ol {
 
 body {
   margin: 0;
-  background-color: #FAF9F8; }
+  background-color: #FAF9F8;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px; }
   body div.table-outer {
     border-radius: 5px;
     padding: 5px; }
@@ -18,5 +20,10 @@ body {
       background-color: white;
       border-radius: 2px;
       width: 100%; }
+      body div.table-outer table tr td.empty {
+        background-color: #F0EDEA; }
+    body div.table-outer div.controls {
+      display: flex;
+      justify-content: space-between; }
   body section.panel {
     background-color: white; }

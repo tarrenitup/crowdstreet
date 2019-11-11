@@ -2,6 +2,7 @@ $bg: #FAF9F8;
 $red: #E57D73;
 $blue: #73B7E5;
 $green: #76D77A; 
+$grey: #F0EDEA;
 
 h1, h2, h3, p, a, ul, ol {
     margin: 0;
@@ -11,6 +12,8 @@ h1, h2, h3, p, a, ul, ol {
 body {
     margin: 0;
     background-color: $bg;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
 
     div.table-outer {
         border-radius: 5px;
@@ -32,6 +35,19 @@ body {
             background-color: white;
             border-radius: 2px;
             width: 100%;
+
+            tr {
+                td {
+                    &.empty {
+                        background-color: $grey;
+                    }
+                }
+            }
+        }
+
+        div.controls {
+            display: flex;
+            justify-content: space-between;
         }
     }
 

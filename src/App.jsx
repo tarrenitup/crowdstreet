@@ -51,9 +51,9 @@ const getRows = (cells, colCount, ltr) => {
 const Row = ({ rowCells }) => (
     <tr>
         {rowCells.map((cell, idx) => {
-            const cellContent = cell ? cell : 'blah!';
+            const empty = cell ? '' : 'empty';
             return (
-                <td key={idx}>{cellContent}</td>
+                <td className={empty} key={idx}>{cell}</td>
             )
         })}
     </tr>
@@ -64,10 +64,6 @@ const Table = ({ table, tableId, configClick, directions }) => {
     const cells = getCells(table.data.N, table.data.X, table.data.M);
     const rows = getRows(cells, colCount, directions[table.direction].ltr);
     const rowsInline = directions[table.direction].up ? rows.reverse() : rows;
-    
-    const temp = () => {
-        configClick(tableId);
-    }
 
     return (
         <div className={`table-outer ${table.name}`} style={{width: `${table.data.W}%`}}>
@@ -79,7 +75,7 @@ const Table = ({ table, tableId, configClick, directions }) => {
                 </tbody>
             </table>
             <div className='controls'>
-                <button onClick={temp}>configure</button>
+                <button onClick={() => configClick(tableId)}>configure</button>
                 <p className='label'>{table.data.W}%</p>
             </div>
         </div>
@@ -112,45 +108,58 @@ const Inputs = ({ data, reset }) => {
     return (
         <div className="inputs">
             <div>
-                <label>N</label>
-                <input value={state.N} onChange={(e) => setState({...state, N: e.target.value})} />
+                <label>Quantity</label>
+                <input value={state.N} onChange={e => setState({...state, N: e.target.value})} />
             </div>
             <div>
-                <label>X</label>
-                <input value={state.X} onChange={(e) => setState({...state, X: e.target.value})} />
+                <label>Interval</label>
+                <input value={state.X} onChange={e => setState({...state, X: e.target.value})} />
             </div>
             <div>
-                <label>M</label>
-                <input value={state.M} onChange={(e) => setState({...state, M: e.target.value})} />
+                <label>Max</label>
+                <input value={state.M} onChange={e => setState({...state, M: e.target.value})} />
             </div>
             <div>
-                <label>W</label>
-                <input value={state.W} onChange={(e) => setState({...state, W: e.target.value})} />
+                <label>Width</label>
+                <input value={state.W} onChange={e => setState({...state, W: e.target.value})} />
             </div>
         </div>
     );
 }
 
-const Panel = ({ table }) => {
+const Selector = ({currentDirection, directions, handleChange}) => {
+    console.log(currentDirection);
+    return (
+        <select onChange={handleChange} value={currentDirection}>
+            {Object.keys(directions).map((direction, idx) => {
+                return (<option key={idx+'op'} value={direction}>{directions[direction].label}</option>);
+            })}
+        </select>
+    )
+}
+
+const Panel = ({ table, directions }) => {
 
     const [ state, setState ] = useState({name: table.name, direction: table.direction});
 
     useEffect(() => {
-        setState(table);
-    }, [table]);
+        setState({name: table.name, direction: table.direction});
+    },[table.name, table.direction]);
+
+    const handleSelectChange = (e) => {
+        setState({...state, direction: e.target.value})
+    }
 
     return (
         <section className={`panel ${state.name}`}>
             <main className="parameters">
                 <h1>table {state.name}</h1>
                 <Inputs data={table.data} />
-                <select>
-                    <option>a</option>
-                </select>
+                <Selector currentDirection={state.direction} directions={directions} handleChange={handleSelectChange} />
             </main>
             <footer>
-                <button className="ok" value='ok' />
-                <button className="cancel" value='cancel' />
+                <button className="ok">ok</button>
+                <button className="cancel" onClick={() => console.log('click!')}>cancel</button>
             </footer>
         </section>
     )
