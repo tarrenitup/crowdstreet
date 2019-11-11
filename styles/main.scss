@@ -1,3 +1,41 @@
+$bg: #FAF9F8;
+$red: #E57D73;
+$blue: #73B7E5;
+$green: #76D77A; 
+
+h1, h2, h3, p, a, ul, ol {
+    margin: 0;
+    padding: 0;
+}
+
 body {
-    // background-color: orange;
+    margin: 0;
+    background-color: $bg;
+
+    div.table-outer {
+        border-radius: 5px;
+        padding: 5px;
+
+        &.red {
+            background-color: $red;
+        }
+
+        &.blue {
+            background-color: $blue;
+        }
+
+        &.green {
+            background-color: $green;
+        }
+
+        table {
+            background-color: white;
+            border-radius: 2px;
+            width: 100%;
+        }
+    }
+
+    section.panel {
+        background-color: white;
+    }
 }

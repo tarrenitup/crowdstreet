@@ -1,0 +1,22 @@
+h1, h2, h3, p, a, ul, ol {
+  margin: 0;
+  padding: 0; }
+
+body {
+  margin: 0;
+  background-color: #FAF9F8; }
+  body div.table-outer {
+    border-radius: 5px;
+    padding: 5px; }
+    body div.table-outer.red {
+      background-color: #E57D73; }
+    body div.table-outer.blue {
+      background-color: #73B7E5; }
+    body div.table-outer.green {
+      background-color: #76D77A; }
+    body div.table-outer table {
+      background-color: white;
+      border-radius: 2px;
+      width: 100%; }
+  body section.panel {
+    background-color: white; }

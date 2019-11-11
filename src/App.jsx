@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useState, useEffect } from 'react';
 import { selector } from 'postcss-selector-parser';
 
 const updateObjectInArray = (array, action) => array.map(
@@ -59,15 +59,19 @@ const Row = ({ rowCells }) => (
     </tr>
 )
 
-const Table = ({ table }) => {
+const Table = ({ table, tableId, configClick, directions }) => {
     const colCount = 5;
     const cells = getCells(table.data.N, table.data.X, table.data.M);
-    const rows = getRows(cells, colCount, table.direction.ltr);
-    const rowsInline = table.direction.up ? rows.reverse() : rows;
+    const rows = getRows(cells, colCount, directions[table.direction].ltr);
+    const rowsInline = directions[table.direction].up ? rows.reverse() : rows;
+    
+    const temp = () => {
+        configClick(tableId);
+    }
 
     return (
-        <div className={`table-outer ${table.name}`}>
-            <table style={{width: `${table.data.W}%`}}>
+        <div className={`table-outer ${table.name}`} style={{width: `${table.data.W}%`}}>
+            <table>
                 <tbody>
                     {rowsInline.map((rowCells, idx) => (
                         <Row rowCells={rowCells} key={idx} />
@@ -75,30 +79,71 @@ const Table = ({ table }) => {
                 </tbody>
             </table>
             <div className='controls'>
-                <button onClick={() => console.log('clicked!')} />
+                <button onClick={temp}>configure</button>
                 <p className='label'>{table.data.W}%</p>
             </div>
         </div>
     );
 }
 
-const Tables = ({ tables }) => (
+const Tables = ({ tables, configClick, directions }) => (
     <div className='tables'>
-        {tables.map((table, idx) => <Table table={table} key={idx} /> )}
+        {tables.map((table, idx) => (
+            <Table 
+                table={table} 
+                tableId={idx} 
+                configClick={configClick} 
+                directions={directions}
+                key={idx+'t'} 
+            />
+        ))}
     </div>
 )
 
-const Panel = ({ table, directions }) => {
+const Inputs = ({ data, reset }) => {
+
+    const [ state, setState ] = useState(data);
+    
+    useEffect(() => {
+        setState(data);
+    }, [data]);
+
+
     return (
-        <section className={`panel ${table.name}`}>
+        <div className="inputs">
+            <div>
+                <label>N</label>
+                <input value={state.N} onChange={(e) => setState({...state, N: e.target.value})} />
+            </div>
+            <div>
+                <label>X</label>
+                <input value={state.X} onChange={(e) => setState({...state, X: e.target.value})} />
+            </div>
+            <div>
+                <label>M</label>
+                <input value={state.M} onChange={(e) => setState({...state, M: e.target.value})} />
+            </div>
+            <div>
+                <label>W</label>
+                <input value={state.W} onChange={(e) => setState({...state, W: e.target.value})} />
+            </div>
+        </div>
+    );
+}
+
+const Panel = ({ table }) => {
+
+    const [ state, setState ] = useState({name: table.name, direction: table.direction});
+
+    useEffect(() => {
+        setState(table);
+    }, [table]);
+
+    return (
+        <section className={`panel ${state.name}`}>
             <main className="parameters">
-                <h1>table {table.name}</h1>
-                {Object.keys(table.data).map((key, idx) => (
-                    <>
-                        <label key={key+'l'}>{key}</label>
-                        <input key={key+'i'} defaultValue={table.data[key]} />
-                    </>
-                ))}
+                <h1>table {state.name}</h1>
+                <Inputs data={table.data} />
                 <select>
                     <option>a</option>
                 </select>
@@ -119,21 +164,25 @@ const directions = {
 }
 
 const initialState = {
+    panel: {
+        open: false,
+        tableIdx: 0,
+    },
     tables: [
         {
             name: 'red', 
             data: {N: 8, X: 1, M: 29, W: 20}, 
-            direction: directions.LTR_UP,
+            direction: 'LTR_UP',
         },
         {
             name: 'green', 
             data: {N: 231, X: 1, M: 247, W: 30}, 
-            direction: directions.LTR_UP,
+            direction: 'LTR_UP',
         },
         {
             name: 'blue', 
             data: {N: 47, X: 2, M: 81, W: 40}, 
-            direction: directions.RTL_UP,
+            direction: 'RTL_UP',
         },
     ]
 };
@@ -145,7 +194,11 @@ const reducer = (state, action) => {
                 ...state,
                 tables: updateObjectInArray(state.tables, action),
             };
-        
+        case 'changePanelTable':
+            return {
+                ...state,
+                panel: {...state.panel, tableIdx: action.payload}
+            }
         default:
             return state;
     }
@@ -155,10 +208,17 @@ const App = () => {
 
     const [ state, dispatch ] = useReducer(reducer, initialState);
 
+    const configClick = (tableId) => {
+        dispatch({type:'changePanelTable', payload: tableId})
+    }
+    
+    const panelTableIdx = state.panel.tableIdx;
+    const panelTable = state.tables[panelTableIdx];
+
     return (
         <div className='App'>
-            <Tables tables={state.tables} />
-            <Panel table={state.tables[0]} directions={directions} />
+            <Tables tables={state.tables} configClick={configClick} directions={directions} />
+            <Panel table={panelTable} directions={directions} />
         </div>
     );
 }
