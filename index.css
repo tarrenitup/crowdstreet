@@ -2,28 +2,141 @@ h1, h2, h3, p, a, ul, ol {
   margin: 0;
   padding: 0; }
 
+input, button, submit {
+  border: none; }
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+  outline: none; }
+
 body {
   margin: 0;
   background-color: #FAF9F8;
   font-family: 'Nunito', sans-serif;
   font-size: 14px; }
-  body div.table-outer {
-    border-radius: 5px;
-    padding: 5px; }
-    body div.table-outer.red {
-      background-color: #E57D73; }
-    body div.table-outer.blue {
-      background-color: #73B7E5; }
-    body div.table-outer.green {
-      background-color: #76D77A; }
-    body div.table-outer table {
-      background-color: white;
-      border-radius: 2px;
-      width: 100%; }
-      body div.table-outer table tr td.empty {
-        background-color: #F0EDEA; }
-    body div.table-outer div.controls {
+  body div.App {
+    display: relative; }
+    body div.App.panel-show section.panel {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0px) scale(1); }
+    body div.App div.tables {
       display: flex;
-      justify-content: space-between; }
-  body section.panel {
-    background-color: white; }
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 5px; }
+      @media (min-width: 500px) {
+        body div.App div.tables {
+          flex-direction: row; } }
+      body div.App div.tables div.table-outer {
+        border-radius: 5px;
+        padding: 3px;
+        margin: 10px;
+        transition: width 250ms; }
+        body div.App div.tables div.table-outer.red {
+          background-color: #E57D73; }
+          body div.App div.tables div.table-outer.red table tr td {
+            color: #C76C63; }
+            body div.App div.tables div.table-outer.red table tr td.empty {
+              background-color: #E57D73; }
+        body div.App div.tables div.table-outer.blue {
+          background-color: #73B7E5;
+          display: none; }
+          body div.App div.tables div.table-outer.blue table tr td {
+            color: #69A8D2; }
+            body div.App div.tables div.table-outer.blue table tr td.empty {
+              background-color: #73B7E5; }
+          @media (min-width: 700px) {
+            body div.App div.tables div.table-outer.blue {
+              display: block; } }
+        body div.App div.tables div.table-outer.green {
+          background-color: #76D77A; }
+          body div.App div.tables div.table-outer.green table tr td {
+            color: #68BE6C; }
+            body div.App div.tables div.table-outer.green table tr td.empty {
+              background-color: #76D77A; }
+        body div.App div.tables div.table-outer table {
+          background-color: white;
+          border-top-left-radius: 3px;
+          border-top-right-radius: 3px;
+          padding: 5px;
+          width: 100%; }
+          body div.App div.tables div.table-outer table tr td {
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            margin: 5px;
+            padding: 5px 0;
+            border-radius: 5px; }
+            @media (min-width: 500px) {
+              body div.App div.tables div.table-outer table tr td {
+                font-size: 12px; } }
+            @media (min-width: 700px) {
+              body div.App div.tables div.table-outer table tr td {
+                font-size: 14px; } }
+            body div.App div.tables div.table-outer table tr td.empty {
+              opacity: 0.15; }
+        body div.App div.tables div.table-outer div.controls {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px; }
+          @media (min-width: 500px) {
+            body div.App div.tables div.table-outer div.controls {
+              flex-direction: row; } }
+          body div.App div.tables div.table-outer div.controls p {
+            color: white;
+            font-weight: 700; }
+          body div.App div.tables div.table-outer div.controls button {
+            display: flex;
+            background-color: transparent;
+            align-items: center;
+            padding: 7px;
+            padding-right: 15px;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: background-color 350ms; }
+            body div.App div.tables div.table-outer div.controls button:hover {
+              background-color: rgba(255, 255, 255, 0.15); }
+              body div.App div.tables div.table-outer div.controls button:hover svg {
+                transform: rotate(30deg); }
+              body div.App div.tables div.table-outer div.controls button:hover span {
+                opacity: 1;
+                visibility: visible;
+                transform: translateX(0px); }
+            body div.App div.tables div.table-outer div.controls button svg {
+              width: 20px;
+              height: 20px;
+              transition: transform 350ms; }
+              body div.App div.tables div.table-outer div.controls button svg path {
+                fill: white; }
+            body div.App div.tables div.table-outer div.controls button span {
+              opacity: 0;
+              visibility: hidden;
+              transform: translateX(-7px);
+              margin-left: 7px;
+              margin-top: -2px;
+              color: white;
+              font-weight: 700;
+              transition: opacity 350ms, visibility 350ms, transform 350ms; }
+    body div.App section.panel {
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(25px) scale(0.97);
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      width: 300px;
+      height: 300px;
+      left: calc(50vw - 150px);
+      bottom: 50px;
+      border-radius: 12px;
+      box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.03), 0px 0px 11px rgba(0, 0, 0, 0.02), 0px 0px 32px rgba(0, 0, 0, 0.06);
+      background-color: white;
+      transition: opacity 250ms, visibility 250ms, transform 250ms; }
+      body div.App section.panel main {
+        flex: 1; }

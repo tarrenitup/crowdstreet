@@ -1,11 +1,11 @@
 import React, { useReducer, useState, useEffect } from 'react';
+import Cog from './components/Cog.jsx';
 
 const isEven = n => (n % 2) === 0;
 
 // factor out
 const getCells = (start, increment, end) => {
     if (!start || !increment || !end) return;
-    console.log("increment", increment);
     const cellCount = Math.floor((end - start) / increment) + 1;
     return new Array(cellCount).fill(null).map((c, i) => start + i * increment);
 }
@@ -59,7 +59,10 @@ const Table = ({ table, tableId, configClick, directions }) => {
                 </tbody>
             </table>
             <div className='controls'>
-                <button onClick={() => configClick(tableId)}>configure</button>
+                <button onClick={() => configClick(tableId)}>
+                    <Cog/>
+                    <span>configure</span>
+                </button>
                 <p className='label'>{table.data.W}%</p>
             </div>
         </div>
@@ -113,7 +116,7 @@ const Selector = ({currentDirection, directions, handleChange}) => {
     )
 }
 
-const Panel = ({ table, directions, okClick }) => {
+const Panel = ({ table, directions, okClick, close }) => {
 
     const initialState = table;
     const [ state, setState ] = useState(initialState);
@@ -128,6 +131,7 @@ const Panel = ({ table, directions, okClick }) => {
 
     const handleCancel = () => {
         setState(initialState);
+        close();
     }
 
     return (
@@ -192,8 +196,14 @@ const reducer = (state, action) => {
         case 'changePanelTable':
             return {
                 ...state,
-                panel: {...state.panel, tableIdx: action.payload}
+                panel: {...state.panel, tableIdx: action.payload},
             }
+        case 'openPanel':
+            return {
+                ...state,
+                panel: {...state.panel, open: action.item},
+            }
+
         default:
             return state;
     }
@@ -203,21 +213,31 @@ const App = () => {
 
     const [ state, dispatch ] = useReducer(reducer, initialState);
 
+    const closePanel = () => {
+        dispatch({type: 'openPanel', item: false});
+    }
+
+    const openPanel = () => {
+        dispatch({type: 'openPanel', item: true});
+    }
+
     const configClick = (tableId) => {
-        dispatch({type:'changePanelTable', payload: tableId})
+        dispatch({type:'changePanelTable', payload: tableId});
+        openPanel();
     }
 
     const panelOkClick = (newTable) => {
-        dispatch({type:'updateTable', item: newTable, index: panelTableIdx})
+        dispatch({type:'updateTable', item: newTable, index: panelTableIdx});
+        closePanel();
     }
     
     const panelTableIdx = state.panel.tableIdx;
     const panelTable = state.tables[panelTableIdx];
 
     return (
-        <div className='App'>
+        <div className={`App ${state.panel.open ? 'panel-show' : ''}`}>
             <Tables tables={state.tables} configClick={configClick} directions={directions} />
-            <Panel table={panelTable} directions={directions} okClick={panelOkClick} />
+            <Panel table={panelTable} directions={directions} okClick={panelOkClick} close={closePanel}  />
         </div>
     );
 }

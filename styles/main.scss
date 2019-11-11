@@ -1,12 +1,33 @@
 $bg: #FAF9F8;
 $red: #E57D73;
+$red-text: #C76C63;
 $blue: #73B7E5;
+$blue-text: #69A8D2;
 $green: #76D77A; 
+$green-text: #68BE6C;
 $grey: #F0EDEA;
+$time-std: 250ms;
+$time-plus: 350ms;
+$phone: 500px;
+$tablet: 700px;
+$shadow:
+    0px 0px 3px rgba(0,0,0,0.03),
+    0px 0px 11px rgba(0,0,0,0.02),
+    0px 0px 32px rgba(0,0,0,0.06);
 
 h1, h2, h3, p, a, ul, ol {
     margin: 0;
     padding: 0;
+}
+
+input, button, submit { border:none; } 
+
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+  outline: none;
 }
 
 body {
@@ -15,43 +36,200 @@ body {
     font-family: 'Nunito', sans-serif;
     font-size: 14px;
 
-    div.table-outer {
-        border-radius: 5px;
-        padding: 5px;
+    div.App {
+        display: relative;
 
-        &.red {
-            background-color: $red;
+        &.panel-show {
+
+            section.panel {
+                visibility: visible;
+                opacity: 1;
+                transform: translateY(0px) scale(1); 
+            }
         }
 
-        &.blue {
-            background-color: $blue;
-        }
+        div.tables {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 5px;
 
-        &.green {
-            background-color: $green;
-        }
+            @media(min-width: $phone) {
+                flex-direction: row;
+            }
+    
+            div.table-outer {
+                border-radius: 5px;
+                padding: 3px;
+                margin: 10px;
+                transition: width $time-std;
+        
+                &.red {
+                    background-color: $red;
+                    table tr td {
+                        color: $red-text;
 
-        table {
-            background-color: white;
-            border-radius: 2px;
-            width: 100%;
+                        &.empty {
+                            background-color: $red;
+                        }
+                    }
 
-            tr {
-                td {
-                    &.empty {
-                        background-color: $grey;
+                }
+        
+                &.blue {
+                    background-color: $blue;
+                    display: none;
+                    table tr td {
+                        color: $blue-text;
+
+                        &.empty {
+                            background-color: $blue;
+                        }
+                    }
+    
+                    @media(min-width: $tablet) {
+                        display: block;
+                    }
+                }
+        
+                &.green {
+                    background-color: $green;
+                    table tr td {
+                        color: $green-text;
+
+                        &.empty {
+                            background-color: $green;
+                        }
+                    }
+                }
+        
+                table {
+                    background-color: white;
+                    border-top-left-radius: 3px;
+                    border-top-right-radius: 3px;
+                    padding: 5px;
+                    width: 100%;
+        
+                    tr {
+                        td {
+                            font-size: 10px;
+                            font-weight: 700;
+                            color: white;
+                            text-align: center;
+                            margin: 5px;
+                            padding: 5px 0;
+                            border-radius: 5px;
+
+                            @media(min-width: $phone) {
+                                font-size: 12px;
+                            }
+
+                            @media(min-width: $tablet) {
+                                font-size: 14px;
+                            }
+
+                            &.empty {
+                                opacity: 0.15;
+                            }
+                        }
+                    }
+                }
+        
+                div.controls {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 10px;
+
+                    @media(min-width: $phone) {
+                        flex-direction: row;
+                    }
+
+                    p {
+                        color: white;
+                        font-weight: 700;
+                    }
+
+                    button {
+                        display: flex;
+                        background-color: transparent;
+                        align-items: center;
+                        padding: 7px;
+                        padding-right: 15px;
+                        border-radius: 100px;
+                        cursor: pointer;
+                        transition: background-color $time-plus;
+
+                        &:hover {
+                            background-color: rgba(255,255,255,0.15);
+                            svg {
+                                transform: rotate(30deg);
+                            }
+                            span {
+                                opacity: 1;
+                                visibility: visible;
+                                transform: translateX(0px);
+                            }
+                        }
+
+                        svg {
+                            width: 20px;
+                            height: 20px;
+                            transition: transform $time-plus;
+
+                            path {
+                                fill: white;
+                            }
+                        }
+
+                        span {
+                            opacity: 0;
+                            visibility: hidden;
+                            transform: translateX(-7px);
+                            margin-left: 7px;
+                            margin-top: -2px;
+                            color: white;
+                            font-weight: 700;
+                            transition:
+                                opacity $time-plus,
+                                visibility $time-plus,
+                                transform $time-plus;
+                        }
                     }
                 }
             }
         }
 
-        div.controls {
+        section.panel {
+            $size: 300px;
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(25px) scale(0.97);
+    
+            position: absolute;
             display: flex;
-            justify-content: space-between;
-        }
-    }
+            flex-direction: column;
+            width: $size;
+            height: $size;
+            left: calc(50vw - #{$size/2});
+            bottom: 50px;
+            border-radius: 12px;
+            box-shadow: $shadow;
+            background-color: white;
+            transition: 
+                opacity $time-std,
+                visibility $time-std,
+                transform $time-std;
 
-    section.panel {
-        background-color: white;
+            main {
+                flex: 1;
+
+                h1 {
+
+                }
+            }
+            footer {}
+        }
     }
 }
